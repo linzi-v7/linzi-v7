@@ -1,62 +1,51 @@
-<div align="center">
-  <img src="./assets/header.svg" alt="Faris Osama header" width="100%" />
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg" />
+  <img src="./assets/hero-light.svg" alt="Faris Osama, written as a contribution graph. Full-stack engineer, Cairo, Egypt." width="100%" />
+</picture>
 
 <br />
 
-<div align="center">
+I am a full-stack engineer in Cairo. I design the data model, write the API, build the screens and run the deploy.
 
-**Full-stack developer based in Cairo**
+### Work
 
-Working mostly with **TypeScript**, **React**, **Node.js**, **Laravel**, and **PostgreSQL**.  
-Interested in backend architecture, system design, deployment, and practical AI-assisted development.
+<a href="https://multaqa.site">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/work-multaqa-dark.svg" />
+    <img src="./assets/work-multaqa-light.svg" alt="Multaqa, in production: a multi-company ERP with accounting, HR and payroll. Admin SPA, company SPA and Flutter app, Laravel API, PostgreSQL, workers." width="100%" />
+  </picture>
+</a>
 
-</div>
+<a href="https://github.com/linzi-v7/malaf-releases">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/work-malaf-dark.svg" />
+    <img src="./assets/work-malaf-light.svg" alt="Malaf, in production: an offline-first clinic app. React UI, Rust core, encrypted SQLite, encrypted backup, signed updates." width="100%" />
+  </picture>
+</a>
 
----
+<a href="https://github.com/linzi-v7/questify">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/work-questify-dark.svg" />
+    <img src="./assets/work-questify-light.svg" alt="Questify, open source: a gamified learning platform. Expo app and admin SPA, Express API, PostgreSQL, Cloudflare R2, pg-boss jobs." width="100%" />
+  </picture>
+</a>
 
-## About
 
-I like building applications that are not just functional, but structured properly underneath — APIs, databases, architecture, deployment, and developer workflows.
+### Activity
 
-A lot of what I care about sits somewhere between product engineering and systems thinking: building things that work, scale reasonably, and do not collapse the moment the happy path ends.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/activity-dark.svg" />
+  <img src="./assets/activity-light.svg" alt="Contribution graph for the last 12 months" width="100%" />
+</picture>
 
-## Stack
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/life-dark.svg" />
+  <img src="./assets/life-light.svg" alt="Conway's Game of Life, seeded with the contribution graph above" width="100%" />
+</picture>
 
-<div align="center">
-  <img
-    src="https://skillicons.dev/icons?i=ts,js,php,nodejs,express,laravel,react,vite,postgres,prisma,docker,nginx,linux,git,github&perline=8"
-    alt="Tech stack"
-  />
-</div>
+### Stack
 
-<br />
-
-## Selected Work
-
-<p align="center">
-  <a href="https://github.com/linzi-v7/questify">
-    <img
-      src="./assets/questify-card.svg"
-      alt="Questify"
-      width="49%"
-    />
-  </a>
-  <a href="https://github.com/linzi-v7/food-delivery-project">
-    <img
-      src="./assets/food-delivery-card.svg"
-      alt="Food Delivery Platform"
-      width="49%"
-    />
-  </a>
-</p>
-
-## GitHub
-
-<div align="center">
-  <img
-    height="165"
-    src="https://streak-stats.demolab.com?user=linzi-v7&hide_border=true&background=00000000&ring=58A6FF&fire=58A6FF&currStreakLabel=C9D1D9&sideLabels=C9D1D9&dates=8B949E&sideNums=F0F6FC&currStreakNum=F0F6FC"
-    alt="GitHub streak"
-  />
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/stack-dark.svg" />
+  <img src="./assets/stack-light.svg" alt="Interface: TypeScript, React, TanStack, Vite, Flutter, Expo. Service: Laravel, Node.js, Express, Rust, Tauri. Data: PostgreSQL, Prisma, SQLite. Runtime: Docker, Nginx, Linux, DigitalOcean." width="100%" />
+</picture>
