@@ -34,13 +34,8 @@ I am a full-stack engineer in Cairo. I design the data model, write the API, bui
 ### Activity
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/activity-dark.svg" />
-  <img src="./assets/activity-light.svg" alt="Contribution graph for the last 12 months" width="100%" />
-</picture>
-
-<picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/life-dark.svg" />
-  <img src="./assets/life-light.svg" alt="Conway's Game of Life, seeded with the contribution graph above" width="100%" />
+  <img src="./assets/life-light.svg" alt="My contribution graph for the last 12 months, played as Conway's Game of Life, with the totals below it" width="100%" />
 </picture>
 
 ### Stack

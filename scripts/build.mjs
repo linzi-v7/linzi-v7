@@ -112,47 +112,27 @@ async function fetchCalendar() {
   return json.data.user.contributionsCollection.contributionCalendar;
 }
 
-function activity(theme, cal) {
-  const pitch = 16, size = 13, top = 24;
-  const left = Math.round((W - (cal.weeks.length * pitch - 3)) / 2);
-  let cells = '', months = '', lastMonth = -1;
-  cal.weeks.forEach((week, w) => {
-    const month = Number(week.contributionDays[0].date.slice(5, 7)) - 1;
-    if (month !== lastMonth && w < cal.weeks.length - 2) {
-      if (lastMonth !== -1 || week.contributionDays[0].date.slice(8) <= '07') months += `<text class="m" x="${left + w * pitch}" y="11">${MONTHS[month].toUpperCase()}</text>`;
-      lastMonth = month;
-    }
-    for (const day of week.contributionDays) {
-      const level = LEVELS[day.contributionLevel];
-      cells += `<rect class="c ${level ? `l${level}` : 'e'}" x="${left + w * pitch}" y="${top + day.weekday * pitch}" width="${size}" height="${size}" rx="3" style="animation-delay:${(w * 0.014 + day.weekday * 0.02).toFixed(3)}s"><title>${day.contributionCount} on ${day.date}</title></rect>`;
-    }
-  });
+function stats(cal, left, y) {
   const days = cal.weeks.flatMap((w) => w.contributionDays);
   let streak = 0, longest = 0;
   for (const d of days) { streak = d.contributionCount ? streak + 1 : 0; longest = Math.max(longest, streak); }
-  const best = days.reduce((a, b) => (b.contributionCount > a.contributionCount ? b : a));
+  const best = days.reduce((p, d) => (d.contributionCount > p.contributionCount ? d : p));
   const active = days.filter((d) => d.contributionCount).length;
-  const stats = [
+  return [
     [cal.totalContributions.toLocaleString('en-US'), 'CONTRIBUTIONS, LAST 12 MONTHS'],
     [`${active}`, `ACTIVE DAYS OF ${days.length}`],
     [`${longest}`, 'DAYS, LONGEST STREAK'],
     [`${best.contributionCount}`, `BEST DAY, ${Number(best.date.slice(8))} ${MONTHS[Number(best.date.slice(5, 7)) - 1].toUpperCase()}`],
-  ];
-  const y = top + 7 * pitch + 42;
-  const row = stats
-    .map(([n, l], i) => `<text class="n${i ? '' : ' a'}" x="${left + i * 217}" y="${y}">${n}</text><text class="m" x="${left + i * 217}" y="${y + 21}">${l}</text>`)
-    .join('');
-  return svg(y + 30, `${cal.totalContributions} contributions in the last 12 months`, theme,
-    `.n{font:700 30px ${SANS};letter-spacing:-.02em;fill:${THEMES[theme].text}}.n.a{fill:${THEMES[theme].accent}}`,
-    `${months}${cells}${row}`);
+  ].map(([n, l], i) => `<text class="n${i ? '' : ' a'}" x="${left + i * 217}" y="${y}">${n}</text><text class="m" x="${left + i * 217}" y="${y + 21}">${l}</text>`).join('');
 }
 
-// Conway's Game of Life on a torus, seeded with the contribution calendar.
+// Conway's Game of Life on a torus. Generation 0 is the real contribution calendar.
 function life(theme, cal) {
-  const cols = cal.weeks.length, rows = 7, pitch = 16, size = 13, top = 24, hold = 5, max = 60, step = 0.4;
+  const t = THEMES[theme];
+  const cols = cal.weeks.length, rows = 7, pitch = 16, size = 13, top = 24, hold = 6, max = 60, step = 0.4;
   const left = Math.round((W - (cols * pitch - 3)) / 2);
   const level = new Map();
-  let grid = Array.from({ length: cols }, () => Array(rows).fill(0));
+  const grid = Array.from({ length: cols }, () => Array(rows).fill(0));
   cal.weeks.forEach((week, c) => week.contributionDays.forEach((d) => {
     if (d.contributionCount) { grid[c][d.weekday] = 1; level.set(`${c},${d.weekday}`, LEVELS[d.contributionLevel]); }
   }));
@@ -171,20 +151,23 @@ function life(theme, cal) {
     seen.add(key);
     frames.push(next);
   }
-  const total = frames.length + hold - 1;
+  // The timeline repeats generation 0 so the real year stays on screen before it starts to evolve.
+  const timeline = [...Array(hold - 1).fill(0), ...frames.keys()];
+  const anim = (values) => `<animate attributeName="opacity" calcMode="discrete" dur="${(timeline.length * step).toFixed(1)}s" repeatCount="indefinite" values="${values.join(';')}"/>`;
   let cells = '';
   for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
     const x = left + c * pitch, y = top + r * pitch;
     cells += `<rect class="e" x="${x}" y="${y}" width="${size}" height="${size}" rx="3"/>`;
-    const states = frames.map((f) => f[c][r]);
-    if (!states.includes(1)) continue;
-    const values = [...Array(hold - 1).fill(states[0]), ...states].join(';');
-    cells += `<rect class="l${level.get(`${c},${r}`) ?? 2}" x="${x}" y="${y}" width="${size}" height="${size}" rx="3" opacity="${states[0]}"><animate attributeName="opacity" calcMode="discrete" dur="${(total * step).toFixed(1)}s" repeatCount="indefinite" values="${values}"/></rect>`;
+    if (!frames.some((f) => f[c][r])) continue;
+    cells += `<rect class="l${level.get(`${c},${r}`) ?? 2}" x="${x}" y="${y}" width="${size}" height="${size}" rx="3" opacity="${grid[c][r]}">${anim(timeline.map((g) => frames[g][c][r]))}</rect>`;
   }
-  return svg(top + rows * pitch + 1, "Conway's Game of Life, seeded with the contribution graph", theme, '',
-    `<text class="m" x="${left}" y="11"><tspan class="a">GAME OF LIFE</tspan>  /  SEEDED WITH THE GRAPH ABOVE</text>
-<text class="m" x="${W - left}" y="11" text-anchor="end">B3/S23  /  TORUS ${cols}×${rows}  /  ${frames.length - 1} GENERATIONS</text>
-${cells}`);
+  const counter = frames.map((_, g) => `<text class="m t" x="${W - left}" y="11" text-anchor="end" opacity="${g ? 0 : 1}">${String(g).padStart(2, '0')}${anim(timeline.map((f) => (f === g ? 1 : 0)))}</text>`).join('');
+  const y = top + rows * pitch + 42;
+  return svg(y + 30, `${cal.totalContributions} contributions in the last 12 months, played as Conway's Game of Life`, theme,
+    `.n{font:700 30px ${SANS};letter-spacing:-.02em;fill:${t.text}}.n.a{fill:${t.accent}}`,
+    `<text class="m" x="${left}" y="11"><tspan class="a">MY LAST 12 MONTHS</tspan>  /  PLAYED AS CONWAY'S GAME OF LIFE</text>
+<text class="m" x="${W - left - 24}" y="11" text-anchor="end">B3/S23  /  TORUS ${cols}×${rows}  /  GENERATION</text>${counter}
+${cells}${stats(cal, left, y)}`);
 }
 
 const WORK = [
@@ -282,7 +265,6 @@ mkdirSync(OUT, { recursive: true });
 const cal = await fetchCalendar();
 for (const theme of Object.keys(THEMES)) {
   writeFileSync(new URL(`hero-${theme}.svg`, OUT), hero(theme));
-  writeFileSync(new URL(`activity-${theme}.svg`, OUT), activity(theme, cal));
   writeFileSync(new URL(`stack-${theme}.svg`, OUT), stack(theme));
   writeFileSync(new URL(`life-${theme}.svg`, OUT), life(theme, cal));
   for (const p of WORK) writeFileSync(new URL(`${p.file}-${theme}.svg`, OUT), work(theme, p));
